@@ -10,7 +10,6 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const getData = require('./modules/getData');
-const { all } = require('./routes');
 
 app.use(express.static('public'));
 app.use(require('./routes/router'));
@@ -23,9 +22,6 @@ app.use(require('./routes/router'));
 // location, areaId
 // https://opendata.rdw.nl/resource/t5pc-eb34.json
 
-// get all data
-// 'https://npropendata.rdw.nl/parkingdata/v2/'
-
 // async function getMeStuff() {
 //   let allData = await axios.get('https://npropendata.rdw.nl/parkingdata/v2/');
 //   allData = allData.data.ParkingFacilities;
@@ -37,12 +33,6 @@ app.use(require('./routes/router'));
 // }
 
 // getMeStuff();
-
-// code to fetch data from the api and save it to a file
-// not using this while testing my code to prevent unesesairy pings to the api
-// const url = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json';
-// const data = await getData.fetchData(url);
-// fs.writeFileSync('output/output.json', JSON.stringify(data));
 
 // Setup server
 app.listen(port, () => {
