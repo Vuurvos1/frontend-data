@@ -7,9 +7,10 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 
 const port = process.env.PORT || 3000;
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 const getData = require('./modules/getData');
+const dataHelper = require('./modules/dataHelpers');
 
 app.use(express.static('public'));
 app.use(require('./routes/router'));
@@ -33,6 +34,17 @@ app.use(require('./routes/router'));
 // }
 
 // getMeStuff();
+
+const filePathLocationData = 'output/geoParkeerGarages.json';
+const geoParkeerGarages = getData.getLocalData(filePathLocationData);
+
+const filePathParkeergebied = 'output/specificatiesParkeergebied.json';
+const Parkeergebied = getData.getLocalData(filePathParkeergebied);
+
+const key = 'areaid';
+const z = dataHelper.combineDataset(Parkeergebied, geoParkeerGarages, key);
+// console.log(z[0], z[1], z[2]);
+
 
 // Setup server
 app.listen(port, () => {

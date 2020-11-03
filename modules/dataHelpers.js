@@ -112,32 +112,24 @@ const getLocationByAreaId = (dataset) => {
  * @return {array} A new object with the two combined datasets
  */
 const combineDataset = (dataset1, dataset2, key) => {
-  // refactor to use map or reduce
-  const outputArr = [];
-
-  for (const i of dataset1) {
-    let newObj = {};
-
-    const dataMatch = dataset2.find((element) => {
-      return i[key] == element[key];
+  return dataset1.reduce((result, value)=> {
+    const dataMatch = dataset2.find((item) => {
+      return item[key] === value[key];
     });
 
     if (dataMatch) {
-      newObj = dataMatch;
-
-      for (const [key, value] of Object.entries(i)) {
-        if (!newObj[key]) {
-          newObj[key] = value;
+      for (const [key, val] of Object.entries(value)) {
+        if (!dataMatch[key]) {
+          dataMatch[key] = val;
         }
       }
 
-      outputArr.push(newObj);
+      result.push(dataMatch);
     } else {
       // no match was found
     }
-  }
-
-  return outputArr;
+    return result;
+  }, []);
 };
 
 module.exports = {

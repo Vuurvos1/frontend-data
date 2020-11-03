@@ -2,9 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Data Viz</title>
+    <title>D3 Hex Map Nederland</title>
     <link rel="stylesheet" href="css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- d3-hexgrid script comes first. -->
+    <script src="https://unpkg.com/d3-hexgrid"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
   </head>
   <body>
     <header>
@@ -13,10 +18,13 @@
 
     <main>
       <p>hi there</p>
+
+      <!-- Create an element where the map will take place -->
+      <div id="container"></div>
     </main>
 
     <footer></footer>
 
-    <script src="js/script.js"></script>
+    <script src="js/bundle.js"></script>
   </body>
 </html>

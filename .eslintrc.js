@@ -15,5 +15,6 @@ module.exports = {
       'error', {
         'code': 90,
       },
+    ],
   },
 };
