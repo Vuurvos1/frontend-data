@@ -17,7 +17,7 @@ For the Volkskrant, we will be research/explore several datasets about a topic t
 
 For this article visualizations will be made using data from RDV, these datasets contain information about car parking and which vehicles park where inside the Netherlands. The data from these datasets will be visualized using the D3 JavaScript library.
 
-Check out the [wiki](https://github.com/vuurvos1/functional-programming/wiki) of this repository to find out more detailed information about the project.
+Check out the [wiki](https://github.com/vuurvos1/frontend-data/wiki) of this repository to find out more detailed information about the project.
 
 ### 🛠 Build with
 

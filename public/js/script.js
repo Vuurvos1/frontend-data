@@ -1,9 +1,11 @@
 // 'https://bl.ocks.org/larsvers/7f856d848e1f5c007553a9cea8a73538'
-import d3 from 'd3';
-import topojson from 'topojson';
+import {select, json, geoPath, geoMercator, scaleSequential, interpolateViridis} from 'd3';
+import {hexgrid} from 'd3-hexgrid';
 
 /**
  * Main code
+ * @param {array} geo - topojson
+ * @param {array} userData - array containing data points
  */
 function ready(geo, userData) {
   // Container SVG.
@@ -11,16 +13,16 @@ function ready(geo, userData) {
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
-  const svg = d3
-      .select('#container')
-      .append('svg')
-      .attr('width', width + margin.left + margin.top)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g');
+  const svg =
+      select('#container')
+          .append('svg')
+          .attr('width', width + margin.left + margin.top)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g');
 
   // Projection and path.
-  const projection = d3.geoMercator().fitSize([width, height], geo);
-  const geoPath = d3.geoPath().projection(projection);
+  const projection = geoMercator().fitSize([width, height], geo);
+  const geoPath1 = geoPath().projection(projection);
 
   // Prep user data.
   userData.forEach((site) => {
@@ -30,24 +32,24 @@ function ready(geo, userData) {
   });
 
   // Create a hexgrid generator.
-  const hexgrid = d3
-      .hexgrid()
-      .extent([width, height])
-      .geography(geo)
-      .pathGenerator(geoPath)
-      .projection(projection)
-      .hexRadius(4);
+  const hexgrid1 =
+      hexgrid()
+          .extent([width, height])
+          .geography(geo)
+          .pathGenerator(geoPath1)
+          .projection(projection)
+          .hexRadius(4);
 
   // Instantiate the generator.
-  const hex = hexgrid(userData);
+  const hex = hexgrid1(userData);
 
   // Create exponential colorScale.
-  const colourScale = d3
-      .scaleSequential(function(t) {
+  const colourScale =
+      scaleSequential(function(t) {
         const tNew = Math.pow(t, 10);
-        return d3.interpolateViridis(tNew);
+        return interpolateViridis(tNew);
       })
-      .domain([...hex.grid.extentPointDensity].reverse());
+          .domain([...hex.grid.extentPointDensity].reverse());
 
   // Draw the hexes.
   svg
@@ -64,11 +66,11 @@ function ready(geo, userData) {
       .style('stroke', '#F4EB9F');
 }
 
-// Data load.
-const geoData = d3.json(
+// load data
+const geoData = json(
     'https://cartomap.github.io/nl/wgs84/arbeidsmarktregio_2020.geojson',
 );
-const points = d3.json(
+const points = json(
     'https://raw.githubusercontent.com/larsvers/data-store/master/farmers_markets_us.json',
 );
 
