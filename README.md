@@ -24,11 +24,30 @@ Check out the [wiki](https://github.com/vuurvos1/frontend-data/wiki) of this rep
 - Node.js
 - D3.js
 - NPM packages
-- Lots of sweat
 
 ## 🔍 Research question
 
 Where do I have the most chance to find a parking location?
+
+- Where are the most parking spots
+
+  - Calculate the number of parking spots per x amount of residents
+
+- How accessible are the parking spots?
+
+  - Get a list if the parking garage has disabled access
+
+- How much do I have to pay to park?
+
+  - Get pricing per hour for certain garages
+
+- What about parking during holidays and on the weekends (like Sunday)
+  - See if there is data available for parking availability during certain days
+
+**Cool to have**
+
+- How full are parking garages/spots currently
+  - Find an API or multiple to see how many cars are parked where, in real-time
 
 ### Datasets needed
 
@@ -37,6 +56,13 @@ Where do I have the most chance to find a parking location?
 - Where are the most parking spots?
   [Open-Data-Parkeren-SPECIFICATIES-PARKEERGEBIED](https://opendata.rdw.nl/Parkeren/Open-Data-Parkeren-SPECIFICATIES-PARKEERGEBIED/b3us-f26s) (capacity of parking garages)
 - How many parking spots are filled (preferably realtime)
+
+### Concept sketch
+
+![Map](https://raw.githubusercontent.com/wiki/Vuurvos1/frontend-data/img/datavizSketch.png)
+
+**Tooltip for extra info**
+![Tooltip](https://raw.githubusercontent.com/wiki/Vuurvos1/frontend-data/img/datavizSketchTooltip.png)
 
 ### Assumptions
 
