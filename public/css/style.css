@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+.garageCircle {
+  fill: aquamarine;
+  fill-opacity: 0.5;
+  stroke: darkcyan;
+  stroke-opacity: 1;
+}
+
 body {
   background-color: #202020;
 }

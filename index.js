@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const axios = require('axios');
@@ -9,10 +10,17 @@ const axios = require('axios');
 const port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({extended: false}));
 
+const corsOptions = {
+  origin: 'http://localhost:1234',
+  optionsSuccessStatus: 200, // For legacy browser support
+};
+
+app.use(cors((corsOptions)));
+
 const getData = require('./modules/getData');
 const dataHelper = require('./modules/dataHelpers');
 
-app.use(express.static('public'));
+app.use(express.static('dist'));
 app.use(require('./routes/router'));
 
 // Open-Data-Parkeren-SPECIFICATIES-PARKEERGEBIED

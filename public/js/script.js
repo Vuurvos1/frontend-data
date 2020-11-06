@@ -1,6 +1,17 @@
 // 'https://bl.ocks.org/larsvers/7f856d848e1f5c007553a9cea8a73538'
-import {select, json, geoPath, geoMercator, scaleSequential, interpolateViridis} from 'd3';
+import {
+  select,
+  json,
+  geoPath,
+  geoMercator,
+  scaleSequential,
+  interpolateViridis,
+  scaleSqrt,
+  max,
+} from 'd3';
 import {hexgrid} from 'd3-hexgrid';
+
+const url = `${window.location.origin}`;
 
 /**
  * Main code
@@ -64,6 +75,41 @@ function ready(geo, userData) {
       !d.pointDensity ? '#fff' : colourScale(d.pointDensity),
       )
       .style('stroke', '#F4EB9F');
+
+  // Circle radius
+  const radiusScale = scaleSqrt();
+  const radiusValue = (d) => {
+    if (d.capacity) {
+      return d.capacity;
+    }
+  };
+
+  radiusScale
+      .domain([0, max(userData, radiusValue)])
+      .range([0, 5]);
+
+  // console.log(userData);
+  console.log( radiusScale
+      .domain([0, max(userData, radiusValue)]));
+
+  // Draw circles
+  svg.append('g')
+      .selectAll('circle')
+      .data(userData)
+      .enter()
+      .append('circle')
+      .attr('class', 'garageCircle')
+      .attr('cx', (d) => {
+        const lat = Number(d.location.latitude);
+        const long = Number(d.location.longitude);
+        return projection([long, lat])[0];
+      })
+      .attr('cy', (d) => {
+        const lat = Number(d.location.latitude);
+        const long = Number(d.location.longitude);
+        return projection([long, lat])[1];
+      })
+      .attr('r', (d) => radiusScale(radiusValue(d)));
 }
 
 // load data
@@ -71,11 +117,20 @@ const geoData = json(
     'https://cartomap.github.io/nl/wgs84/arbeidsmarktregio_2020.geojson',
 );
 const points = json(
-    'https://raw.githubusercontent.com/larsvers/data-store/master/farmers_markets_us.json',
+    `http://localhost:3000/garageGeo`,
 );
+// 'https://raw.githubusercontent.com/larsvers/data-store/master/farmers_markets_us.json',
 
 Promise.all([geoData, points]).then((res) => {
   const [geoData, userData] = res;
 
   ready(geoData, userData);
 });
+
+
+// fetch(`${url}/garageGeo`, {
+//   method: 'POST',
+// })
+//     .then((response) => response.json())
+//     .then((data) => (console.log(data)));
+
