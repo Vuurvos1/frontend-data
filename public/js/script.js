@@ -1,7 +1,9 @@
+// import this to use async with parcel
+import 'regenerator-runtime/runtime';
+
 // 'https://bl.ocks.org/larsvers/7f856d848e1f5c007553a9cea8a73538'
 import {
   select,
-  json,
   geoPath,
   geoMercator,
   scaleSequential,
@@ -9,34 +11,47 @@ import {
   scaleSqrt,
   max,
 } from 'd3';
+
 import {hexgrid} from 'd3-hexgrid';
 
-const url = `${window.location.origin}`;
 
 /**
- * Main code
- * @param {array} geo - topojson
- * @param {array} userData - array containing data points
+ * Main code loop
  */
-function ready(geo, userData) {
+async function mainCode() {
+  const url = `${window.location.origin}`;
+
+  const geoDataUrl = 'https://cartomap.github.io/nl/wgs84/arbeidsmarktregio_2020.geojson';
+  const pointsUrl = `${url}/garageGeo`;
+
+  // get data
+  const [geoData, points] = await Promise.all([
+    await (await fetch(geoDataUrl)).json(),
+    await (await fetch(pointsUrl, {
+      method: 'POST',
+    })).json(),
+  ]);
+
+  // do d3 stuff
+
   // Container SVG.
   const margin = {top: 30, right: 30, bottom: 30, left: 30};
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
   const svg =
-      select('#container')
-          .append('svg')
-          .attr('width', width + margin.left + margin.top)
-          .attr('height', height + margin.top + margin.bottom)
-          .append('g');
+        select('#container')
+            .append('svg')
+            .attr('width', width + margin.left + margin.top)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g');
 
   // Projection and path.
-  const projection = geoMercator().fitSize([width, height], geo);
+  const projection = geoMercator().fitSize([width, height], geoData);
   const geoPath1 = geoPath().projection(projection);
 
   // Prep user data.
-  userData.forEach((site) => {
+  points.forEach((site) => {
     const coords = projection([+site.lng, +site.lat]);
     site.x = coords[0];
     site.y = coords[1];
@@ -44,23 +59,23 @@ function ready(geo, userData) {
 
   // Create a hexgrid generator.
   const hexgrid1 =
-      hexgrid()
-          .extent([width, height])
-          .geography(geo)
-          .pathGenerator(geoPath1)
-          .projection(projection)
-          .hexRadius(4);
+        hexgrid()
+            .extent([width, height])
+            .geography(geoData)
+            .pathGenerator(geoPath1)
+            .projection(projection)
+            .hexRadius(4);
 
   // Instantiate the generator.
-  const hex = hexgrid1(userData);
+  const hex = hexgrid1(points);
 
   // Create exponential colorScale.
   const colourScale =
-      scaleSequential(function(t) {
-        const tNew = Math.pow(t, 10);
-        return interpolateViridis(tNew);
-      })
-          .domain([...hex.grid.extentPointDensity].reverse());
+        scaleSequential(function(t) {
+          const tNew = Math.pow(t, 10);
+          return interpolateViridis(tNew);
+        })
+            .domain([...hex.grid.extentPointDensity].reverse());
 
   // Draw the hexes.
   svg
@@ -72,7 +87,7 @@ function ready(geo, userData) {
       .attr('d', hex.hexagon())
       .attr('transform', (d) => `translate(${d.x} ${d.y})`)
       .style('fill', (d) =>
-      !d.pointDensity ? '#fff' : colourScale(d.pointDensity),
+        !d.pointDensity ? '#fff' : colourScale(d.pointDensity),
       )
       .style('stroke', '#F4EB9F');
 
@@ -85,17 +100,17 @@ function ready(geo, userData) {
   };
 
   radiusScale
-      .domain([0, max(userData, radiusValue)])
+      .domain([0, max(points, radiusValue)])
       .range([0, 5]);
 
   // console.log(userData);
-  console.log( radiusScale
-      .domain([0, max(userData, radiusValue)]));
+  // console.log( radiusScale
+  //     .domain([0, max(points, radiusValue)]));
 
   // Draw circles
   svg.append('g')
       .selectAll('circle')
-      .data(userData)
+      .data(points)
       .enter()
       .append('circle')
       .attr('class', 'garageCircle')
@@ -112,25 +127,4 @@ function ready(geo, userData) {
       .attr('r', (d) => radiusScale(radiusValue(d)));
 }
 
-// load data
-const geoData = json(
-    'https://cartomap.github.io/nl/wgs84/arbeidsmarktregio_2020.geojson',
-);
-const points = json(
-    `http://localhost:3000/garageGeo`,
-);
-// 'https://raw.githubusercontent.com/larsvers/data-store/master/farmers_markets_us.json',
-
-Promise.all([geoData, points]).then((res) => {
-  const [geoData, userData] = res;
-
-  ready(geoData, userData);
-});
-
-
-// fetch(`${url}/garageGeo`, {
-//   method: 'POST',
-// })
-//     .then((response) => response.json())
-//     .then((data) => (console.log(data)));
-
+mainCode();

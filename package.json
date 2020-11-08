@@ -33,16 +33,11 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "file-system": "^2.2.2",
-    "lodash": "^4.17.20",
     "parcel": "^1.12.4",
-    "topojson": "^3.0.2",
-    "uglify-js": "^3.11.5"
+    "topojson": "^3.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
-    "babel-cli": "^6.0.0",
     "eslint": "^7.6.0",
     "eslint-config-google": "^0.14.0",
     "eslint-loader": "^4.0.2",

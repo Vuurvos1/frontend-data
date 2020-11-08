@@ -4,14 +4,14 @@ const router = express.Router();
 const getData = require('./../modules/getData');
 const dataHelper = require('./../modules/dataHelpers');
 
-router.get('/garageGeo', async (req, res) => {
+router.post('/garageGeo', async (req, res) => {
   // use post to prevent user from seeing data when going to /garageGeo
   try {
     // Intercept non-POST requests
-    // if (req.method != 'POST') {
-    //   res.send('ok');
-    //   return;
-    // }
+    if (req.method != 'POST') {
+      res.send('ok');
+      return;
+    }
 
     // do logic
     const filePathParkeergebied = 'output/specificatiesParkeergebied.json';
