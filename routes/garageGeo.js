@@ -4,6 +4,8 @@ const router = express.Router();
 const getData = require('./../modules/getData');
 const dataHelper = require('./../modules/dataHelpers');
 
+const fs = require('fs');
+
 router.post('/garageGeo', async (req, res) => {
   // use post to prevent user from seeing data when going to /garageGeo
   try {
@@ -22,8 +24,18 @@ router.post('/garageGeo', async (req, res) => {
 
     const key = 'areaid';
 
+    const responseData = dataHelper.combineDataset(parkArea, geoParkGarages, key);
+
+    // add lat and lng to work with d3 hexgrid
+    responseData.map((i) => {
+      i.lat = Number(i.location.latitude);
+      i.lng = Number(i.location.longitude);
+    });
+
+    fs.writeFileSync(`output/YEP.json`, JSON.stringify(responseData));
+
     res.status(200);
-    res.json(dataHelper.combineDataset(parkArea, geoParkGarages, key));
+    res.json(responseData);
   } catch (err) {
     console.log(err);
     res.status(404).send('Error');

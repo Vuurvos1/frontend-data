@@ -1,19 +1,17 @@
 // import this to use async with parcel
 import 'regenerator-runtime/runtime';
 
-// 'https://bl.ocks.org/larsvers/7f856d848e1f5c007553a9cea8a73538'
 import {
   select,
   geoPath,
   geoMercator,
   scaleSequential,
   interpolateViridis,
-  scaleSqrt,
-  max,
 } from 'd3';
 
 import {hexgrid} from 'd3-hexgrid';
 
+import {drawCircles} from './modules/circle';
 
 /**
  * Main code loop
@@ -91,40 +89,8 @@ async function mainCode() {
       )
       .style('stroke', '#F4EB9F');
 
-  // Circle radius
-  const radiusScale = scaleSqrt();
-  const radiusValue = (d) => {
-    if (d.capacity) {
-      return d.capacity;
-    }
-  };
 
-  radiusScale
-      .domain([0, max(points, radiusValue)])
-      .range([0, 5]);
-
-  // console.log(userData);
-  // console.log( radiusScale
-  //     .domain([0, max(points, radiusValue)]));
-
-  // Draw circles
-  svg.append('g')
-      .selectAll('circle')
-      .data(points)
-      .enter()
-      .append('circle')
-      .attr('class', 'garageCircle')
-      .attr('cx', (d) => {
-        const lat = Number(d.location.latitude);
-        const long = Number(d.location.longitude);
-        return projection([long, lat])[0];
-      })
-      .attr('cy', (d) => {
-        const lat = Number(d.location.latitude);
-        const long = Number(d.location.longitude);
-        return projection([long, lat])[1];
-      })
-      .attr('r', (d) => radiusScale(radiusValue(d)));
+  // drawCircles(svg, projection, points);
 }
 
 mainCode();

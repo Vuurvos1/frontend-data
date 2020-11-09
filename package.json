@@ -4,10 +4,12 @@
   "description": "Functional programming",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "parcel": "parcel public/index.html",
     "build": "parcel build public/index.html",
-    "dev": "npx nodemon index.js",
+    "nodemon": "npx nodemon index.js", 
+    "dev": "npx npm-run-all --parallel parcel nodemon",
     "lint": "eslint --fix --ext .js ."
   },
   "repository": {
@@ -43,6 +45,7 @@
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^3.1.4",
     "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5"
   },
   "nodemonConfig": {
