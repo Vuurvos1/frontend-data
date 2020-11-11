@@ -11,7 +11,6 @@ import {
   interpolateViridis,
   scaleLinear,
   scaleBand,
-  hierarchy,
   axisLeft,
   axisBottom,
 } from 'd3';
@@ -40,9 +39,14 @@ async function mainCode() {
   // do d3 stuff
 
   // Container SVG
-  const margin = {top: 30, right: 30, bottom: 30, left: 30};
-  const width = 960 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const margin = {
+    top: 30,
+    right: 30,
+    bottom: 30,
+    left: 30,
+  };
+  const width = 1024 - margin.left - margin.right;
+  const height = 720 - margin.top - margin.bottom;
 
   const svg =
         select('#map')
@@ -68,7 +72,7 @@ async function mainCode() {
             .geography(geoData)
             .pathGenerator(geoPath1)
             .projection(projection)
-            .hexRadius(4);
+            .hexRadius(5);
 
   // Instantiate the generator
   const hex = hexgrid1(points);
@@ -109,6 +113,11 @@ async function mainCode() {
       .style('fill', (d) =>
         !d.pointDensity ? '#fff' : colourScale(d.pointDensity),
       )
+      .attr('class', (d) => {
+        if (d.length > 0) {
+          return 'point';
+        }
+      })
       .style('stroke', '#F4EB9F')
       .on('click', (e, d) => {
         if (d.datapoints > 0) {
@@ -124,74 +133,86 @@ async function mainCode() {
       });
 
 
+  // initialize some barchart stuff
+  const chart = select('#bar svg');
+
+  const barMargin = {
+    left: 200,
+    right: 20,
+    top: 20,
+    bottom: 40,
+  };
+
+  const w = chart.attr('width');
+  const h = chart.attr('height');
+
+  const innerWidth = w - barMargin.left - barMargin.right;
+  const innerHeight = h - barMargin.top - barMargin.bottom;
+
+  chart.append('svg')
+      .attr('width', w + barMargin.left + barMargin.right)
+      .attr('height', h + barMargin.top + barMargin.bottom);
+
+  const xScale = scaleLinear()
+      .range([0, innerWidth]);
+
+  const yScale = scaleBand()
+      .range([0, innerHeight])
+      .padding(.1);
+
+  const g = chart.append('g')
+      .attr('transform', `translate(${barMargin.left}, ${barMargin.top})`);
+
+  // setup axises
+  const barY = g.append('g').call(axisLeft(yScale));
+  const barX = g.append('g').call(axisBottom(xScale))
+      .attr('transform', `translate(0, ${innerHeight})`);
+
   /**
  * Drawing a barchart
  * @param {object} e - Mouse Event
- * @param {object} d - object containg data from the hexagon
+ * @param {object} data - object containg data from the hexagon
  */
-  function drawBarChart(e, d) {
-    console.log(e, d);
-
-    // const chart = select('#bar').append('svg');
-    const chart = select('#bar svg');
-
-    const w = chart.attr('width');
-    const h = chart.attr('height');
-
-    const render = (data) => {
-      const xValue = (d) => {
-        return d.capacity;
-      };
-      const yValue = (d) => {
-        return d.areadesc;
-      };
-
-      const margin = {
-        left: 100,
-        right: 20,
-        top: 20,
-        bottom: 20,
-      };
-
-      const innerWidth = w - margin.left - margin.right;
-      const innerHeight = h - margin.top - margin.bottom;
-
-      const xScale = scaleLinear()
-          .domain([0, max(data, xValue)])
-          .range([0, innerWidth]);
-
-      const yScale = scaleBand()
-          .domain(data.map(yValue))
-          .range([0, innerHeight])
-          .padding(.1);
-
-      const g = chart.append('g')
-          .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-      // setup axises
-      g.append('g').call(axisLeft(yScale));
-      g.append('g').call(axisBottom(xScale))
-          .attr('transform', `translate(0, ${innerHeight})`);
-
-      g.selectAll('rect')
-          .data(data)
-          .enter()
-          .append('rect')
-          .attr('y', (d) => {
-            return yScale(yValue(d));
-          } )
-          .attr('width', (d) => {
-            return xScale(xValue(d));
-          })
-          .attr('height', yScale.bandwidth());
-      // .attr('height', Math.min(yScale.bandwidth(), 100));
+  function drawBarChart(e, data) {
+    const xValue = (d) => {
+      return Number(d.capacity);
     };
 
-    render(d);
+    const yValue = (d) => {
+      return d.areadesc;
+    };
+
+    const xScale = scaleLinear()
+        .domain([0, max(data, xValue)])
+        .range([0, innerWidth]);
+
+    const yScale = scaleBand()
+        .domain(data.map(yValue))
+        .range([0, innerHeight])
+        .padding(.1);
+
+    barY.call(axisLeft(yScale));
+    barX.call(axisBottom(xScale));
+
+    const u = g.selectAll('rect').data(data);
+
+    u
+        .enter()
+        .append('rect')
+        .merge(u)
+        .transition()
+        .attr('y', (d) => {
+          return yScale(yValue(d));
+        } )
+        .attr('width', (d) => {
+          console.log(d);
+          console.log(xScale(xValue(d)));
+          return xScale(xValue(d));
+        })
+        .attr('height', yScale.bandwidth());
+
+    u.exit().remove();
   }
-
-
-  // drawCircles(svg, projection, points);
 }
 
 mainCode();
