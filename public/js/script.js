@@ -2,9 +2,7 @@
 import 'regenerator-runtime/runtime';
 
 import {
-  event,
   max,
-  select,
   geoPath,
   geoMercator,
   scaleSequential,
@@ -19,6 +17,8 @@ import {hexgrid} from 'd3-hexgrid';
 
 import {drawCircles} from './modules/circle';
 
+import {setupScales, bindHexData, chartSetup} from './modules/chartHelpers';
+
 /**
  * Main code loop
  */
@@ -28,7 +28,7 @@ async function mainCode() {
   const geoDataUrl = 'https://cartomap.github.io/nl/wgs84/arbeidsmarktregio_2020.geojson';
   const pointsUrl = `${url}/garageGeo`;
 
-  // get data
+  // fetch data
   const [geoData, points] = await Promise.all([
     await (await fetch(geoDataUrl)).json(),
     await (await fetch(pointsUrl, {
@@ -37,25 +37,10 @@ async function mainCode() {
   ]);
 
   // do d3 stuff
-
-  // Container SVG
-  const margin = {
-    top: 30,
-    right: 30,
-    bottom: 30,
-    left: 30,
-  };
-  const width = 1024 - margin.left - margin.right;
-  const height = 720 - margin.top - margin.bottom;
-
-  const svg =
-        select('#map')
-            .append('svg')
-            .attr('width', width + margin.left + margin.top)
-            .attr('height', height + margin.top + margin.bottom);
+  const mapSvg = chartSetup('#map svg', {top: 30, right: 30, bottom: 30, left: 30});
 
   // Projection and path
-  const projection = geoMercator().fitSize([width, height], geoData);
+  const projection = geoMercator().fitSize([mapSvg.w, mapSvg.h], geoData);
   const geoPath1 = geoPath().projection(projection);
 
   // Prep user data
@@ -68,7 +53,7 @@ async function mainCode() {
   // Create a hexgrid generator
   const hexgrid1 =
         hexgrid()
-            .extent([width, height])
+            .extent([mapSvg.w, mapSvg.h])
             .geography(geoData)
             .pathGenerator(geoPath1)
             .projection(projection)
@@ -77,21 +62,9 @@ async function mainCode() {
   // Instantiate the generator
   const hex = hexgrid1(points);
 
-  // Put data into hexgrid data
-  for (const i of hex.grid.layout) {
-    if (i.datapoints > 0) {
-      for (let j = 0; j < i.datapoints; j++) {
-        const z = points.find((item) => {
-          return (i[j].x == item.x && i[j].y == item.y);
-        });
+  // bind dataset to hexgrid hexagons
+  bindHexData(hex, points);
 
-        if (z) {
-          // https://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically
-          i[j] = {...i[j], ...z};
-        }
-      }
-    }
-  }
 
   // Create exponential colorScale
   const colourScale =
@@ -102,7 +75,7 @@ async function mainCode() {
             .domain([...hex.grid.extentPointDensity].reverse());
 
   // Draw the hexes
-  svg
+  mapSvg
       .append('g')
       .selectAll('path')
       .data(hex.grid.layout)
@@ -120,9 +93,7 @@ async function mainCode() {
       })
       .style('stroke', '#F4EB9F')
       .on('click', (e, d) => {
-        if (d.datapoints > 0) {
-          drawBarChart(e, d);
-        }
+        d.datapoints > 0 ? drawBarChart(d) : null;
       })
       .append('title').text((d) => {
         let totalCapacity = 0;
@@ -133,9 +104,7 @@ async function mainCode() {
       });
 
 
-  // initialize some barchart stuff
-  const chart = select('#bar svg');
-
+  // initialize barchart
   const barMargin = {
     left: 200,
     right: 20,
@@ -143,37 +112,29 @@ async function mainCode() {
     bottom: 40,
   };
 
-  const w = chart.attr('width');
-  const h = chart.attr('height');
+  const barSvg = chartSetup('#bar svg', barMargin);
 
-  const innerWidth = w - barMargin.left - barMargin.right;
-  const innerHeight = h - barMargin.top - barMargin.bottom;
-
-  chart.append('svg')
-      .attr('width', w + barMargin.left + barMargin.right)
-      .attr('height', h + barMargin.top + barMargin.bottom);
-
+  // setup barchart scales
   const xScale = scaleLinear()
-      .range([0, innerWidth]);
+      .range([0, barSvg.w]);
 
   const yScale = scaleBand()
-      .range([0, innerHeight])
+      .range([0, barSvg.h])
       .padding(.1);
 
-  const g = chart.append('g')
+  const g = barSvg.append('g')
       .attr('transform', `translate(${barMargin.left}, ${barMargin.top})`);
 
   // setup axises
   const barY = g.append('g').call(axisLeft(yScale));
   const barX = g.append('g').call(axisBottom(xScale))
-      .attr('transform', `translate(0, ${innerHeight})`);
+      .attr('transform', `translate(0, ${barSvg.h})`);
 
   /**
- * Drawing a barchart
- * @param {object} e - Mouse Event
- * @param {object} data - object containg data from the hexagon
+ * Update an existing barchart with new data
+ * @param {object} data - object array containg data from the hexagon
  */
-  function drawBarChart(e, data) {
+  function drawBarChart(data) {
     const xValue = (d) => {
       return Number(d.capacity);
     };
@@ -184,11 +145,11 @@ async function mainCode() {
 
     const xScale = scaleLinear()
         .domain([0, max(data, xValue)])
-        .range([0, innerWidth]);
+        .range([0, barSvg.w]);
 
     const yScale = scaleBand()
         .domain(data.map(yValue))
-        .range([0, innerHeight])
+        .range([0, barSvg.h])
         .padding(.1);
 
     barY.call(axisLeft(yScale));
@@ -205,8 +166,6 @@ async function mainCode() {
           return yScale(yValue(d));
         } )
         .attr('width', (d) => {
-          console.log(d);
-          console.log(xScale(xValue(d)));
           return xScale(xValue(d));
         })
         .attr('height', yScale.bandwidth());
