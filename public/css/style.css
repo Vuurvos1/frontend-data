@@ -1,3 +1,13 @@
+:root {
+  --blackL: #000;
+  --white: #fff;
+
+  --highlight: #6200ee;
+
+  --dropShadow: 0px 16px 24px rgba(0, 0, 0, 0.14),
+    0px 6px 30px rgba(0, 0, 0, 0.12), 0px 8px 10px rgba(0, 0, 0, 0.2);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +22,67 @@
 }
 
 body {
-  background-color: #202020;
+  min-height: 100vh;
+  /* background-color: #202020; */
+}
+
+h1 {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 300;
+  font-size: 3rem;
+
+  margin-bottom: 0.4em;
+}
+
+h2 {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 300;
+  font-size: 2.25rem;
+
+  margin-bottom: 0.4em;
+}
+
+p {
+  font-family: 'Open Sans', sans-serif;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 48rem;
+  height: 100vh;
+  width: 100vw;
+}
+
+.map {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+map h1 {
+  text-align: center;
+}
+
+.bar {
+  box-shadow: var(--dropShadow);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.bar rect {
+  fill: var(--highlight);
+}
+
+.bar text {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
 }
 
 /* Tablet */

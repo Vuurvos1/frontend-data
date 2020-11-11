@@ -3,19 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <title>D3 Hex Map Nederland</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,600&family=Ubuntu:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <header>
-      <h1>Parking data</h1>
-    </header>
+    <header></header>
 
     <main>
-      <p>hi there</p>
+      <section class="map">
+        <h1>Parking Density</h1>
+        <div id="map"></div>
+      </section>
+
+      <section class="bar">
+        <h2>Garage capacity</h2>
+        <div id="bar">
+          <svg width="600" height="720"></svg>
+        </div>
+      </section>
 
       <!-- Create an element where the map will take place -->
-      <div id="container"></div>
     </main>
 
     <footer></footer>
