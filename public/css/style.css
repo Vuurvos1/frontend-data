@@ -1,6 +1,7 @@
 :root {
   --blackL: #000;
   --white: #fff;
+  --offWhite: #f8f8f8;
 
   --highlight: #6200ee;
 
@@ -27,7 +28,7 @@
 
 body {
   min-height: 100vh;
-  /* background-color: #202020; */
+  background-color: var(--offWhite);
 }
 
 h1 {
@@ -52,7 +53,7 @@ p {
 
 main {
   display: grid;
-  grid-template-columns: 1fr 48rem;
+  grid-template-columns: 1fr 1fr;
   height: 100vh;
   width: 100vw;
 }

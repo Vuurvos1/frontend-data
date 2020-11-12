@@ -15,9 +15,7 @@ import {
 
 import {hexgrid} from 'd3-hexgrid';
 
-import {drawCircles} from './modules/circle';
-
-import {setupScales, bindHexData, chartSetup} from './modules/chartHelpers';
+import {bindHexData, chartSetup} from './modules/chartHelpers';
 
 /**
  * Main code loop
@@ -57,7 +55,7 @@ async function mainCode() {
             .geography(geoData)
             .pathGenerator(geoPath1)
             .projection(projection)
-            .hexRadius(5);
+            .hexRadius(5.2);
 
   // Instantiate the generator
   const hex = hexgrid1(points);
@@ -106,8 +104,8 @@ async function mainCode() {
 
   // initialize barchart
   const barMargin = {
-    left: 200,
-    right: 20,
+    left: 240,
+    right: 30,
     top: 20,
     bottom: 40,
   };

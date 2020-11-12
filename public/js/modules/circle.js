@@ -30,14 +30,10 @@ const drawCircles = (svg, projection, points) => {
       .append('circle')
       .attr('class', 'garageCircle')
       .attr('cx', (d) => {
-        const lat = Number(d.location.latitude);
-        const long = Number(d.location.longitude);
-        return projection([long, lat])[0];
+        return projection([Number(d.lng), Number(d.lat)])[0];
       })
       .attr('cy', (d) => {
-        const lat = Number(d.location.latitude);
-        const long = Number(d.location.longitude);
-        return projection([long, lat])[1];
+        return projection([Number(d.lng), Number(d.lat)])[1];
       })
       .attr('r', (d) => radiusScale(radiusValue(d)));
 };

@@ -1,45 +1,8 @@
 import {
-  max,
   select,
-  scaleLinear,
-  scaleBand,
 } from 'd3';
 
 import {q} from './helpers';
-
-/**
- * Combine 2 datasets based on a certain key value
- * @param {object} svg - D3 selection you want your dots in
- * @param {object}  projection - D3 map projection
- * @param {Array} points - Array containing the points you want to draw
- */
-const updateBarChart = (svg, projection, points) => {
-
-};
-
-/**
- * Combine 2 datasets based on a certain key value
- * @param {object} {xValue, yValue, innerWidth, innerHeight,}
- * @param {object}  data - data array
- * @return {object} xScale, yScale
- */
-const setupScales = (
-    xValue,
-    yValue,
-    innerWidth,
-    innerHeight,
-    data) => {
-  const xScale = scaleLinear()
-      .domain([0, max(data, xValue)])
-      .range([0, innerWidth]);
-
-  const yScale = scaleBand()
-      .domain(data.map(yValue))
-      .range([0, innerHeight])
-      .padding(.1);
-
-  return {xScale, yScale};
-};
 
 /**
  * Setup width and height of a new svg
@@ -84,8 +47,6 @@ const bindHexData = (hexData, dataset) => {
 };
 
 module.exports = {
-  updateBarChart,
-  setupScales,
   bindHexData,
   chartSetup,
 };
