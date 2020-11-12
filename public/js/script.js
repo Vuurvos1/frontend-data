@@ -17,6 +17,13 @@ import {hexgrid} from 'd3-hexgrid';
 
 import {bindHexData, chartSetup} from './modules/chartHelpers';
 
+import {q} from './modules/helpers';
+
+// hide click on coloured message
+q('#map').addEventListener('click', () => {
+  q('.bar .info').style.display = 'none';
+});
+
 /**
  * Main code loop
  */
@@ -107,7 +114,7 @@ async function mainCode() {
     left: 240,
     right: 30,
     top: 20,
-    bottom: 40,
+    bottom: 60,
   };
 
   const barSvg = chartSetup('#bar svg', barMargin);
@@ -122,6 +129,12 @@ async function mainCode() {
 
   const g = barSvg.append('g')
       .attr('transform', `translate(${barMargin.left}, ${barMargin.top})`);
+
+  barSvg.append('text')
+      .attr('text-anchor', 'end')
+      .attr('x', barSvg.w * 2 - 260)
+      .attr('y', barSvg.h + barMargin.top + 40)
+      .text('Garage capacity');
 
   // setup axises
   const barY = g.append('g').call(axisLeft(yScale));
@@ -138,7 +151,12 @@ async function mainCode() {
     };
 
     const yValue = (d) => {
-      return d.areadesc;
+      // if string to long chop of text between brackets
+      if (d.areadesc.length < 25) {
+        return d.areadesc;
+      } else {
+        return d.areadesc.replace(/(\(.*?\))/g, '').trim();
+      }
     };
 
     const xScale = scaleLinear()
