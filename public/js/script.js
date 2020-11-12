@@ -132,7 +132,7 @@ async function mainCode() {
 
   barSvg.append('text')
       .attr('text-anchor', 'end')
-      .attr('x', barSvg.w * 2 - 260)
+      .attr('x', barSvg.w + barMargin.left - barMargin.right)
       .attr('y', barSvg.h + barMargin.top + 40)
       .text('Garage capacity');
 
