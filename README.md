@@ -24,7 +24,7 @@ Check out the [wiki](https://github.com/vuurvos1/frontend-data/wiki) of this rep
 ### See it live
 
 The site is also hosted on Glitch, note that it can take a while to launch the app.
-See it here: [frontend-data.glitch.me/](frontend-data.glitch.me/)
+See it here: [frontend-data.glitch.me/](https://frontend-data.glitch.me/)
 
 ### 🛠 Build with
 
