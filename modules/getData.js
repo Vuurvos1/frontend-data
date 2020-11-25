@@ -21,8 +21,24 @@ const getLocalData = (filePath) => {
   return data;
 };
 
+/**
+ * !! WARNING THIS FUNCTION TAKES A LONG TIME TO EXECUTE !!
+ * Fetch all 7500+ RDW garages separatly and save them
+ *  @param {string} path - Path where to save the data to
+ */
+const fetchAllGarages = async (path) => {
+  const allData = (await axios.get('https://npropendata.rdw.nl/parkingdata/v2/'))
+      .data.ParkingFacilities;
+
+  for (const i of allData) {
+    const data = await getData.fetchData(i.staticDataUrl);
+    fs.writeFileSync(`${path}/${i.identifier}.json`, JSON.stringify(data));
+  }
+};
+
 
 module.exports = {
   fetchData,
   getLocalData,
+  fetchAllGarages,
 };

@@ -36,7 +36,7 @@ router.post('/garageGeo', async (req, res) => {
     const dataKeys = ['areaid', 'lat', 'lng', 'areadesc', 'capacity'];
     responseData = getColumns(responseData, dataKeys);
 
-    fs.writeFileSync(`output/YEP.json`, JSON.stringify(responseData));
+    fs.writeFileSync(`output/geoSpecCombined.json`, JSON.stringify(responseData));
 
     res.status(200);
     res.json(responseData);

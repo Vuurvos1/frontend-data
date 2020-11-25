@@ -12,13 +12,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 const corsOptions = {
   origin: 'http://localhost:1234',
+  origin: 'http://localhost:5000',
   optionsSuccessStatus: 200, // For legacy browser support
 };
 
 app.use(cors((corsOptions)));
-
-const getData = require('./modules/getData');
-const dataHelper = require('./modules/dataHelpers');
 
 app.use(express.static('dist'));
 app.use(require('./routes/router'));
@@ -31,28 +29,24 @@ app.use(require('./routes/router'));
 // location, areaId
 // https://opendata.rdw.nl/resource/t5pc-eb34.json
 
-// async function getMeStuff() {
-//   let allData = await axios.get('https://npropendata.rdw.nl/parkingdata/v2/');
-//   allData = allData.data.ParkingFacilities;
+/**
+ * Save data to files when server is started
+ */
+async function getMeStuff() {
+  const parkAreaSpecUrl = 'https://opendata.rdw.nl/resource/b3us-f26s.json?$limit=5000';
+  const parkAreaSpec = (await axios.get(parkAreaSpecUrl)).data;
 
-//   for (let i of allData) {
-//     const data = await getData.fetchData(i.staticDataUrl);
-//     fs.writeFileSync(`output/dummyData/${i.identifier}.json`, JSON.stringify(data))
-//   }
-// }
+  fs.writeFileSync('output/specificatiesParkeergebied.json',
+      JSON.stringify(parkAreaSpec));
 
-// getMeStuff();
+  const garageGeoUrl = 'https://opendata.rdw.nl/resource/t5pc-eb34.json?$limit=5000';
+  const garageGeo = (await axios.get(garageGeoUrl)).data;
 
-const filePathLocationData = 'output/geoParkeerGarages.json';
-const geoParkeerGarages = getData.getLocalData(filePathLocationData);
+  fs.writeFileSync('output/geoParkeerGarages.json',
+      JSON.stringify(garageGeo));
+}
 
-const filePathParkeergebied = 'output/specificatiesParkeergebied.json';
-const Parkeergebied = getData.getLocalData(filePathParkeergebied);
-
-const key = 'areaid';
-const z = dataHelper.combineDataset(Parkeergebied, geoParkeerGarages, key);
-// console.log(z[0], z[1], z[2]);
-
+getMeStuff();
 
 // Setup server
 app.listen(port, () => {
